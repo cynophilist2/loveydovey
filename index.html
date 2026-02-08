@@ -1,4 +1,314 @@
-<html>
-  <body>Hi</body>
-  <h1>This works!</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>A Letter For You</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Great+Vibes&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --paper: #f2e6c9;
+  --ink: #3a2c28;
+  --shadow: rgba(0,0,0,0.25);
+  --wax: #7a1f1f;
+}
+
+/* RESET */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle, #2a221c, #15110e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  padding: 16px;
+}
+
+/* ================= ENVELOPE ================= */
+#envelope {
+  width: min(340px, 100%);
+  height: 220px;
+  background: linear-gradient(135deg, #f9f5ee, #e6dcc7);
+  border-radius: 8px;
+  box-shadow: 0 25px 50px var(--shadow);
+  text-align: center;
+  padding: 24px 16px;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+#envelope.opening {
+  animation: openEnvelope 1.2s ease forwards;
+}
+
+@keyframes openEnvelope {
+  to {
+    transform: scale(0.85) rotateX(90deg);
+    opacity: 0;
+  }
+}
+
+.seal-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+input {
+  width: 80%;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-bottom: 1px solid #555;
+  background: transparent;
+  text-align: center;
+  outline: none;
+}
+
+button {
+  margin-top: 16px;
+  padding: 10px 24px;
+  background: #3a2c28;
+  color: white;
+  border: none;
+  border-radius: 20px;
+}
+
+.error {
+  margin-top: 8px;
+  font-size: 14px;
+  color: darkred;
+}
+
+/* ================= LETTER ================= */
+#letter {
+  display: none;
+  max-width: 900px;
+  width: 100%;
+  background: var(--paper);
+  padding: clamp(28px, 6vw, 64px);
+  border-radius: 8px;
+  box-shadow: 0 35px 70px var(--shadow);
+  position: relative;
+  animation: reveal 1.6s ease forwards;
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#letter::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* ================= HANDWRITING ================= */
+.handwriting {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(22px, 5vw, 28px);
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow: hidden;
+  border-right: 2px solid rgba(0,0,0,0.3);
+  animation: caret 1s steps(1) infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes caret {
+  50% { border-color: transparent; }
+}
+
+/* ================= PHOTOS ================= */
+.photos {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.photo {
+  background: white;
+  padding: 10px;
+  box-shadow: 0 12px 24px var(--shadow);
+  transform: rotate(-2deg);
+}
+
+.photo:nth-child(even) {
+  transform: rotate(3deg);
+}
+
+.photo img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+/* ================= WAX SEAL MUSIC BUTTON ================= */
+#waxSeal {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: radial-gradient(circle at top left, #a52a2a, var(--wax));
+  border-radius: 50%;
+  box-shadow:
+    inset -4px -4px 8px rgba(0,0,0,0.4),
+    inset 4px 4px 8px rgba(255,255,255,0.2),
+    0 10px 20px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f4dcdc;
+  font-size: 22px;
+  cursor: pointer;
+  user-select: none;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.4s ease;
+}
+
+#waxSeal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#waxSeal:active {
+  transform: scale(0.92);
+}
+</style>
+</head>
+<body>
+
+<!-- ENVELOPE -->
+<div id="envelope">
+  <div class="seal-title">For You</div>
+  <p>Enter the password</p>
+  <input type="password" id="password" />
+  <br>
+  <button onclick="unlock()">Open</button>
+  <div class="error" id="error"></div>
+</div>
+
+<!-- LETTER -->
+<div id="letter">
+  <div class="handwriting" id="text"></div>
+
+  <div class="photos">
+    <div class="photo"><img src="image1.jpg"></div>
+    <div class="photo"><img src="image2.jpg"></div>
+    <div class="photo"><img src="image3.jpg"></div>
+  </div>
+</div>
+
+<!-- WAX SEAL MUSIC TOGGLE -->
+<div id="waxSeal" onclick="toggleMusic()">⏸</div>
+
+<!-- AUDIO -->
+<audio id="music" src="valentine.mp3" loop></audio>
+
+<script>
+const PASSWORD = "yourpassword";
+
+const LETTER_TEXT = `
+My love,
+
+If you’re reading this, then you made it here.
+I wanted to leave you something soft and lasting—
+something that feels like being held when I can’t be there.
+
+Every moment with you feels rare and gentle.
+You are my favorite place to rest,
+my quiet joy,
+my always.
+
+Keep this letter for the days you forget
+just how deeply you are loved.
+
+Always yours,
+Me
+`;
+
+let index = 0;
+const speed = 40;
+let isPlaying = true;
+
+function unlock() {
+  const input = document.getElementById("password").value;
+  const env = document.getElementById("envelope");
+
+  if (input === PASSWORD) {
+    env.classList.add("opening");
+
+    setTimeout(() => {
+      env.style.display = "none";
+      document.getElementById("letter").style.display = "block";
+      document.getElementById("waxSeal").classList.add("show");
+      startMusic();
+      typeLetter();
+    }, 1100);
+  } else {
+    document.getElementById("error").textContent = "That isn’t it.";
+  }
+}
+
+function typeLetter() {
+  const target = document.getElementById("text");
+  if (index < LETTER_TEXT.length) {
+    target.textContent += LETTER_TEXT.charAt(index);
+    index++;
+    setTimeout(typeLetter, speed);
+  }
+}
+
+function startMusic() {
+  const music = document.getElementById("music");
+  music.volume = 0;
+  music.play();
+
+  let fade = setInterval(() => {
+    if (music.volume < 0.35) {
+      music.volume += 0.01;
+    } else {
+      clearInterval(fade);
+    }
+  }, 120);
+}
+
+function toggleMusic() {
+  const music = document.getElementById("music");
+  const seal = document.getElementById("waxSeal");
+
+  if (music.paused) {
+    music.play();
+    seal.textContent = "⏸";
+    isPlaying = true;
+  } else {
+    music.pause();
+    seal.textContent = "▶";
+    isPlaying = false;
+  }
+}
+</script>
+
+</body>
 </html>
+
