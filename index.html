@@ -279,7 +279,9 @@ button {
 <!-- MUSIC TOGGLE -->
 <div id="waxSeal" onclick="toggleMusic()">⏸</div>
 
-<audio id="music" src="valentine.mp3" loop></audio>
+<audio id="music" src="Laufey_Valentine.mp3" loop></audio>
+
+<audio id="paper" src="paper.mp3"></audio>
 
 <script>
 const PASSWORD = "yourpassword";
@@ -322,6 +324,7 @@ function unlock() {
   if (input === PASSWORD) {
     seal.classList.add("break");
     envelope.classList.add("open");
+    document.getElementById("paper").play();
 
     setTimeout(() => {
       envelope.style.display = "none";
