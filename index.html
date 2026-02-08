@@ -15,7 +15,6 @@
   --wax: #7a1f1f;
 }
 
-/* RESET */
 * { box-sizing: border-box; }
 
 body {
@@ -34,7 +33,7 @@ body {
   width: min(360px, 100%);
   height: 240px;
   position: relative;
-  perspective: 1000px;
+  perspective: 1200px;
 }
 
 /* envelope body */
@@ -44,34 +43,62 @@ body {
   background: linear-gradient(135deg, #f9f5ee, #e6dcc7);
   border-radius: 6px;
   box-shadow: 0 25px 50px var(--shadow);
-  z-index: 1;
-  padding: 24px 16px;
+  padding: 26px 16px;
   text-align: center;
+  z-index: 3;
 }
 
-/* top flap */
+/* top flap (behind content) */
 .env-flap {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 50%;
+  height: 55%;
   background: linear-gradient(135deg, #efe6d2, #ddd1b8);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top;
-  transform: rotateX(0deg);
-  transition: transform 1.1s ease;
-  z-index: 3;
-  box-shadow: inset 0 -2px 6px rgba(0,0,0,0.15);
+  z-index: 1;
+  transition: transform 1.2s ease;
 }
 
-/* opening animation */
+/* wax seal */
+.wax-seal {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  background: radial-gradient(circle at top left, #a52a2a, var(--wax));
+  border-radius: 50%;
+  box-shadow:
+    inset -4px -4px 8px rgba(0,0,0,0.4),
+    inset 4px 4px 8px rgba(255,255,255,0.2),
+    0 12px 24px rgba(0,0,0,0.4);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f4dcdc;
+  font-family: 'Great Vibes', cursive;
+  font-size: 22px;
+  transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+/* crack animation */
+.wax-seal.break {
+  transform: translate(-50%, -50%) scale(1.3) rotate(12deg);
+  opacity: 0;
+}
+
+/* opening */
 #envelope.open .env-flap {
   transform: rotateX(-180deg);
 }
 
 #envelope.open {
-  animation: envelopeFade 1.2s ease forwards;
+  animation: envelopeFade 1.4s ease forwards;
   animation-delay: 1s;
 }
 
@@ -84,7 +111,7 @@ body {
 
 .seal-title {
   font-family: 'Great Vibes', cursive;
-  font-size: 32px;
+  font-size: 34px;
   margin-bottom: 14px;
 }
 
@@ -120,7 +147,7 @@ button {
   max-width: 900px;
   width: 100%;
   background: var(--paper);
-  padding: clamp(28px, 6vw, 64px);
+  padding: clamp(30px, 6vw, 70px);
   border-radius: 8px;
   box-shadow: 0 35px 70px var(--shadow);
   position: relative;
@@ -144,7 +171,7 @@ button {
 /* ================= HANDWRITING ================= */
 .handwriting {
   font-family: 'Great Vibes', cursive;
-  font-size: clamp(22px, 5vw, 28px);
+  font-size: clamp(24px, 5.5vw, 30px);
   color: var(--ink);
   white-space: pre-wrap;
   overflow: hidden;
@@ -160,10 +187,10 @@ button {
 
 /* ================= PHOTOS ================= */
 .photos {
-  margin-top: 40px;
+  margin-top: 50px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 20px;
+  gap: 22px;
   position: relative;
   z-index: 1;
 }
@@ -226,6 +253,8 @@ button {
 <!-- ENVELOPE -->
 <div id="envelope">
   <div class="env-flap"></div>
+  <div class="wax-seal" id="frontSeal">♡</div>
+
   <div class="env-body">
     <div class="seal-title">For You</div>
     <p>Enter the password</p>
@@ -247,10 +276,9 @@ button {
   </div>
 </div>
 
-<!-- WAX SEAL MUSIC TOGGLE -->
+<!-- MUSIC TOGGLE -->
 <div id="waxSeal" onclick="toggleMusic()">⏸</div>
 
-<!-- AUDIO -->
 <audio id="music" src="valentine.mp3" loop></audio>
 
 <script>
@@ -259,31 +287,40 @@ const PASSWORD = "yourpassword";
 const LETTER_TEXT = `
 My love,
 
-If you’re reading this, then you’ve opened something
-that was meant only for you.
+If you are reading this, then you chose to open something
+that was never meant to be rushed.
 
-I wanted to leave you something gentle and lasting,
-something that feels like being held when I can’t be there.
+I wanted to leave you words that feel like a hand held gently,
+like a quiet moment where the world softens around you.
 
-You are my quiet joy,
-my safe place,
-my always.
+Loving you has taught me how small moments can become sacred—
+how your presence alone can feel like home.
 
-Keep this for the days you forget
-just how deeply you are loved.
+On the days you doubt yourself,
+on the nights that feel a little too quiet,
+remember this:
+
+You are deeply wanted.
+You are endlessly cherished.
+You are loved in ways that words will always struggle to explain.
+
+And somehow, still,
+I will keep trying.
 
 Always yours,
 Me
 `;
 
 let index = 0;
-const speed = 40;
+const speed = 38;
 
 function unlock() {
   const input = document.getElementById("password").value;
   const envelope = document.getElementById("envelope");
+  const seal = document.getElementById("frontSeal");
 
   if (input === PASSWORD) {
+    seal.classList.add("break");
     envelope.classList.add("open");
 
     setTimeout(() => {
@@ -292,7 +329,7 @@ function unlock() {
       document.getElementById("waxSeal").classList.add("show");
       startMusic();
       typeLetter();
-    }, 1800);
+    }, 1900);
   } else {
     document.getElementById("error").textContent = "That isn’t it.";
   }
